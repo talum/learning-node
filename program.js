@@ -126,3 +126,25 @@
 // server.listen(process.argv[2]);
 
 //exercise 13
+var http = require('http');
+var url = require('url');
+var server = http.createServer(function(request, response){
+  //handle response
+  var path = url.parse(request.url, true).pathname;
+  var queryString = url.parse(request.url, true).query.iso;
+  var date = new Date(queryString);
+
+  if(path == "/api/parsetime"){
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var seconds = date.getSeconds();
+    var responseBody = JSON.stringify({hour: hours, minute: minutes, second: seconds})
+  }else if(path == "/api/unixtime"){
+    var milliseconds = Date.parse(queryString);
+    var responseBody = JSON.stringify({unixtime: milliseconds})
+  }
+  response.writeHead(200, {'Content-Type': 'application/json'})
+  response.write(responseBody);
+  request.pipe(response);
+})
+server.listen(process.argv[2]);
